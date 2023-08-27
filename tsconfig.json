@@ -20,8 +20,11 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": [
-        "*"
+        "./src/*"
       ],
+      "@test/*": [
+        "./test/*"
+      ]
     },
     "plugins": [
       {
