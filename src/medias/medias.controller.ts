@@ -3,9 +3,11 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
+  ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { MediasService } from './medias.service';
 import { CreateMediaDto } from './dto/create-media.dto';
@@ -26,17 +28,21 @@ export class MediasController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mediasService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.mediasService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMediaDto: UpdateMediaDto) {
-    return this.mediasService.update(+id, updateMediaDto);
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateMediaDto: UpdateMediaDto,
+  ) {
+    return this.mediasService.update(id, updateMediaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.mediasService.remove(+id);
+  @HttpCode(204)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.mediasService.remove(id);
   }
 }
