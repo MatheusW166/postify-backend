@@ -746,7 +746,7 @@ describe('AppController (e2e)', () => {
     });
 
     describe('/:id (PUT)', () => {
-      it('Should respond 200 and update the post', async () => {
+      it('Should respond 200 and update the pub', async () => {
         const pub = await prisma.publication.create({
           data: {
             date: faker.date.future().toISOString(),
