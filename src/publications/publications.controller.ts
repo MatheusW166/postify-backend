@@ -1,7 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  ParseIntPipe,
+  HttpCode,
+  Query,
+} from '@nestjs/common';
 import { PublicationsService } from './publications.service';
 import { CreatePublicationDto } from './dto/create-publication.dto';
 import { UpdatePublicationDto } from './dto/update-publication.dto';
+import { FindAllPublicationDto } from './dto/find-all-publication.dto';
 
 @Controller('publications')
 export class PublicationsController {
@@ -13,22 +25,28 @@ export class PublicationsController {
   }
 
   @Get()
-  findAll() {
-    return this.publicationsService.findAll();
+  findAll(@Query() query?: FindAllPublicationDto) {
+    const { after, published } = query;
+    const afterConverted = after ? new Date(after) : null;
+    return this.publicationsService.findAll(published, afterConverted);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.publicationsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.publicationsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePublicationDto: UpdatePublicationDto) {
-    return this.publicationsService.update(+id, updatePublicationDto);
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updatePublicationDto: UpdatePublicationDto,
+  ) {
+    return this.publicationsService.update(id, updatePublicationDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.publicationsService.remove(+id);
+  @HttpCode(204)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.publicationsService.remove(id);
   }
 }
