@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,6 +11,8 @@ import { MediasRepository } from './medias.repository';
 @Injectable()
 export class MediasService {
   constructor(private readonly mediasRepository: MediasRepository) {}
+
+  private readonly fkPublicationsErrorCode: string = 'P2003';
 
   async create(createMediaDto: CreateMediaDto) {
     const { title, username } = createMediaDto;
@@ -48,7 +51,13 @@ export class MediasService {
   async remove(id: number) {
     await this.findOne(id);
 
-    //TODO: Checar se a media não faz parte de nenhuma publicação (403)
-    return this.mediasRepository.remove(id);
+    try {
+      return await this.mediasRepository.remove(id);
+    } catch (error) {
+      if (error.code === this.fkPublicationsErrorCode) {
+        throw new ForbiddenException();
+      }
+      throw error;
+    }
   }
 }
